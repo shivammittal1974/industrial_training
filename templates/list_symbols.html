@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    List Of Valid Symbols
+{% endblock %}
+
+{% block main %}
+        <div class="form-group">
+            <input type="text" id="Searched_Company" name="searched_name"class="form-control " placeholder="Name of The Company to be Searched" style="width: 300px;">
+        </div>
+    <table id="symbols_table" class="table table-striped">
+        <thead>
+            <th>Symbol</th>
+            <th>Name of The Company</th>
+        </thead>
+        <tbody>
+            {% for i in range(length) %}
+                <tr>
+                    <td>{{symbols[i]["Symbol"]}}</td>
+                    <td>{{symbols[i]["Name"]}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <script>
+        var sym = JSON.parse('{{symbols | tojson | safe}}')
+        $('#Searched_Company').on('keyup',function(){
+            var value = $(this).val();
+            console.log("Value:",value);
+            var data = search_table(value,sym);
+            buildTable(data);
+        });
+
+        function search_table(value,data){
+            var filtered_Data =[];
+
+            for(var i = 0; i < data.length; i++){
+                value = value.toUpperCase();
+                var name = data[i]["Name"].toUpperCase();
+                if(name.includes(value)){
+                    filtered_Data.push(data[i]);
+                }
+
+            }
+            return filtered_Data;
+        }
+        function buildTable(data){
+            var table = document.getElementById('symbols_table');
+            table.innerHTML='';
+            var row0 = `<thead>
+                            <th>Symbol</th>
+                            <th>Name of The Company</th>
+                            </thead>`;
+            table.innerHTML += row0;
+            for(var i = 0;i < data.length; i++){
+                var row = `<tr>
+                            <td>${data[i]["Symbol"]}</td>
+                            <td>${data[i]["Name"]}</td>
+                          </tr>`;
+                table.innerHTML += row;
+            }
+        }
+    </script>
+{% endblock %}
